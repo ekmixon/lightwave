@@ -35,9 +35,8 @@ def tempinput(data):
 def get_ca_cert():
     ks = VmKeyStore('VKS')
     ks.load("TRUSTED_ROOTS")
-    ca_cert = ks.get_certificate("VMCA-Root-Certificate")
-    print ca_cert
-    return ca_cert
+    ks = VmKeyStore('VKS')
+    return ks.get_certificate("VMCA-Root-Certificate")
 
 def run_https_client(ip, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

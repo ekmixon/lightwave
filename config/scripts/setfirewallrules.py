@@ -11,7 +11,7 @@ IPTABLES = '/sbin/iptables'
 IP6TABLES = '/sbin/ip6tables'
 
 def log_error_and_return(stderr):
-    syslog.syslog(syslog.LOG_ERR, "Error: " + stderr)
+    syslog.syslog(syslog.LOG_ERR, f"Error: {stderr}")
     return
 
 def set_lightwave_chain():
@@ -59,7 +59,7 @@ def flush_ip4rules():
         log_error_and_return(stderr)
 
     # No lightwave chain, nothing to do
-    if not b'LIGHTWAVE' in stdout:
+    if b'LIGHTWAVE' not in stdout:
         return
 
     #Remove chain from input
@@ -87,7 +87,7 @@ def flush_ip6rules():
         log_error_and_return(stderr)
 
     # No lightwave chain to remove
-    if not b'LIGHTWAVE' in stdout:
+    if b'LIGHTWAVE' not in stdout:
         return
 
     #Remove chain from input
@@ -138,7 +138,7 @@ def main():
 
     for json_file in json_files:
         if not os.path.exists(json_file):
-            syslog.syslog(syslog.LOG_ERR, "Error: " + json_file + " not found")
+            syslog.syslog(syslog.LOG_ERR, f"Error: {json_file} not found")
             return
 
         with open(json_file) as file:
@@ -157,8 +157,21 @@ def main():
                                ip4_rules['protocol'], '-j', 'ACCEPT']
                     (rc, stdout, stderr) = run_command(cmd)
                     if rc != 0:
-                        syslog.syslog(syslog.LOG_ERR, "Error: Service " + service + " port " + ip4_rules['port'] +
-                                      " rule was not applied. (" + stderr + ")")
+                        syslog.syslog(
+                            syslog.LOG_ERR,
+                            (
+                                (
+                                    (
+                                        f"Error: Service {service} port "
+                                        + ip4_rules['port']
+                                        + " rule was not applied. ("
+                                    )
+                                    + stderr
+                                )
+                                + ")"
+                            ),
+                        )
+
 
 
             if 'ip6_rules' in rules[service]:
@@ -167,8 +180,20 @@ def main():
                            '--dport', ip6_rules['port'], '-j', 'ACCEPT']
                     (rc, stdout, stderr) = run_command(cmd)
                     if rc != 0:
-                        syslog.syslog(syslog.LOG_ERR, "Error: Service " + service + " port " + ip6_rules['port'] +
-                                      " rule was not applied. (" + stderr + ")")
+                        syslog.syslog(
+                            syslog.LOG_ERR,
+                            (
+                                (
+                                    (
+                                        f"Error: Service {service} port "
+                                        + ip6_rules['port']
+                                        + " rule was not applied. ("
+                                    )
+                                    + stderr
+                                )
+                                + ")"
+                            ),
+                        )
 
 
 if __name__ == "__main__":

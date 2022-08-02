@@ -31,15 +31,13 @@ class CdcClient:
         self._client_context = vmafd.client(serverName)
 
     def __del__(self):
-        if self._client_context is not None:
-            pass
+        pass
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
-        if self._client_context is not None:
-            pass
+        pass
 
     def enableClientAffinity(self):
         self._client_context.EnableClientAffinity()
@@ -48,20 +46,14 @@ class CdcClient:
         self._client_context.DisableClientAffinity()
 
     def affinitizedDC(self, domainName, forceRefresh=0):
-        affinitized_dc = self._client_context.GetAffinitizedDC(domainName, forceRefresh)
-        return affinitized_dc
+        return self._client_context.GetAffinitizedDC(domainName, forceRefresh)
 
     def state(self):
-        cdc_state = self._client_context.GetCdcState()
-        return cdc_state
+        return self._client_context.GetCdcState()
 
     def isEnabled(self):
         cdc_state = self._client_context.GetCdcState()
-        if cdc_state == 'UNKNOWN' or cdc_state == 'DISABLED':
-            return False
-        return True
+        return cdc_state not in ['UNKNOWN', 'DISABLED']
 
     def cachedDCEntries(self):
-        l = self._client_context.EnumDCEntries()
-        for a in l:
-            yield a
+        yield from self._client_context.EnumDCEntries()

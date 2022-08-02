@@ -84,24 +84,32 @@ class CerTool:
     def GenCert(self, componentName):
         """ Generates the Certificates in the Cert directory"""
         # Generate full file names for all artifacts
-        self.__certfileName__ = \
-            os.path.join(self.GetCertDir(), componentName, componentName + ".crt")
-        logging.debug("cert File Name : " + self.GetCertFileName())
+        self.__certfileName__ = os.path.join(
+            self.GetCertDir(), componentName, f"{componentName}.crt"
+        )
 
-        self.__privateKeyFile__ = \
-            os.path.join(self.GetCertDir(), componentName, componentName + ".priv")
-        logging.debug("Private Key Name : " + self.GetPrivateKeyFileName())
+        logging.debug(f"cert File Name : {self.GetCertFileName()}")
 
-        self.__publicKeyFile__ = \
-            os.path.join(self.GetCertDir(), componentName, componentName + ".pub")
-        logging.debug("Public Key Name : " + self.GetPublicKeyFileName())
+        self.__privateKeyFile__ = os.path.join(
+            self.GetCertDir(), componentName, f"{componentName}.priv"
+        )
 
-        self.__pfxFileName__ = \
-            os.path.join(self.GetCertDir(), componentName, componentName + ".pfx")
-        logging.debug("pfx file Name : " + self.GetPfxFileName())
+        logging.debug(f"Private Key Name : {self.GetPrivateKeyFileName()}")
+
+        self.__publicKeyFile__ = os.path.join(
+            self.GetCertDir(), componentName, f"{componentName}.pub"
+        )
+
+        logging.debug(f"Public Key Name : {self.GetPublicKeyFileName()}")
+
+        self.__pfxFileName__ = os.path.join(
+            self.GetCertDir(), componentName, f"{componentName}.pfx"
+        )
+
+        logging.debug(f"pfx file Name : {self.GetPfxFileName()}")
 
         dir = os.path.join(self.GetCertDir(),componentName)
-	logging.debug("Target Dir : " + dir)
+        logging.debug(f"Target Dir : {dir}")
         try:
             if not os.path.exists(dir):
                 os.makedirs(dir)
@@ -111,23 +119,29 @@ class CerTool:
 
 
         # Generate Private Key and Public Keys First
-        cmd = [self.GetCertToolPath(),
+        cmd = [
+            self.GetCertToolPath(),
             '--genkey',
-            '--priv=' + self.GetPrivateKeyFileName(),
-            '--pub=' + self.GetPublicKeyFileName()]
+            f'--priv={self.GetPrivateKeyFileName()}',
+            f'--pub={self.GetPublicKeyFileName()}',
+        ]
+
 
         output = self.RunCmd(cmd)
         logging.info(output)
 
-        cmd = [self.GetCertToolPath(),
+        cmd = [
+            self.GetCertToolPath(),
             '--genCIScert',
-            '--priv=' + self.GetPrivateKeyFileName(),
-            '--cert=' + self.GetCertFileName(),
-            '--Name=' + componentName]
+            f'--priv={self.GetPrivateKeyFileName()}',
+            f'--cert={self.GetCertFileName()}',
+            f'--Name={componentName}',
+        ]
+
 
         # if we know the host name, put that into the certificate
         if (self.GetHostType() == 'fqdn'):
-            cmd.append('--FQDN=' + self.GetHostName())
+            cmd.append(f'--FQDN={self.GetHostName()}')
         # elif (self.GetHostType() == 'ipv4'):
         #     # Possible TODO : support IPv4 in certificates
         # elif (self.GetHostType() == 'ipv6'):
@@ -138,7 +152,8 @@ class CerTool:
 
         # TODO : Replace this with certool PKCS12 capabilities
 
-        cmd = [self.GetOpenSSLPath(),
+        cmd = [
+            self.GetOpenSSLPath(),
             'pkcs12',
             '-export',
             '-in',
@@ -150,7 +165,9 @@ class CerTool:
             '-name',
             componentName,
             '-passout',
-            'pass:' + self.GetPassword()]
+            f'pass:{self.GetPassword()}',
+        ]
+
         output = self.RunCmd(cmd)
         logging.info(output)
 
@@ -175,7 +192,7 @@ class CerTool:
             errString = 'Unable to find install param script'
             logging.error(errString)
             raise Exception(errString)
-        logging.debug('Using install param script : ' + self.__vislInstall__)
+        logging.debug(f'Using install param script : {self.__vislInstall__}')
 
     def GetInstallParams(self, key):
         """ Waits on Install Parameter to return the value from visl.
@@ -184,19 +201,18 @@ class CerTool:
         if (self.__skipInstallParams__ is False):
             cmd = [self.__vislInstall__, '-d', key]
             output = self.RunCmd(cmd)
-            logging.debug('Install param found :' + output)
+            logging.debug(f'Install param found :{output}')
             return output
         else:
-            if val in os.environ:
-                param = os.environ[key]
-                logging.debug('Env. param found : ' + param)
-                return param
-            else:
-                raise Exception('Requested Value not found in Env : ' + key)
+            if val not in os.environ:
+                raise Exception(f'Requested Value not found in Env : {key}')
+            param = os.environ[key]
+            logging.debug(f'Env. param found : {param}')
+            return param
 
     def RunCmd(self, args):
         """ Runs a given command"""
-        logging.info('running %s' % args)
+        logging.info(f'running {args}')
         p = subprocess.Popen(args,
                        stdout=subprocess.PIPE,
                        stderr=subprocess.STDOUT)
@@ -217,13 +233,13 @@ class CerTool:
         # VISL will wait until these value are populated by the
         # appropriate Script
         self.__systemUrlHostname__ = \
-            self.GetInstallParams(INSTALL_PARAM_SYSTEM_URL_HOSTNAME)
+                self.GetInstallParams(INSTALL_PARAM_SYSTEM_URL_HOSTNAME)
         self.__systemHosttype__ = \
-            self.GetInstallParams(INSTALL_PARAM_SYSTEM_HOST_TYPE)
+                self.GetInstallParams(INSTALL_PARAM_SYSTEM_HOST_TYPE)
         self.__vmcaPassword__ = \
-            self.GetInstallParams(INSTALL_PARAM_PASSWORD)
+                self.GetInstallParams(INSTALL_PARAM_PASSWORD)
         self.__vmcaCertPath__ = \
-            self.GetInstallParams(INSTALL_PARAM_CERT_DIR)
+                self.GetInstallParams(INSTALL_PARAM_CERT_DIR)
 
         # We really don't need this value,
         # it is a technique on waiting for directory

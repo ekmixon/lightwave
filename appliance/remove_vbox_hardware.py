@@ -3,7 +3,7 @@ import sys
 import shutil
 
 def main(argv):
-    if argv == None or len(argv) < 1:
+    if argv is None or len(argv) < 1:
         print ('Invalid ovf path')
         return -1
 

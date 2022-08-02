@@ -58,7 +58,7 @@ class VMwareCertificateIntallTest:
 
 
 if __name__ == "__main__":
-	for i in range(0,300):
+	for _ in range(300):
 		test = VMwareCertificateIntallTest()
 		test.RunTest()
 

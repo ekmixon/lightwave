@@ -7,7 +7,7 @@ import fileinput
 import getopt
 
 def fixExportedData(exportedFile):
-   newFile = "altered-" + exportedFile
+   newFile = f"altered-{exportedFile}"
 
    with open(newFile, "wt") as out:
       actualLine = ''

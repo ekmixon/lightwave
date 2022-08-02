@@ -49,8 +49,7 @@ class VmKeyStore:
             l = self._client.EnumAliases(self.enum_context)
             if len(l) == 0:
                 break
-            for a in l:
-                yield a
+            yield from l
         self._client.EndEnumAliases(self.enum_context)
 
     def contains_alias(self, alias):
@@ -60,12 +59,10 @@ class VmKeyStore:
         self._client.DeleteCert(self._store_context, alias)
 
     def get_certificate(self, alias):
-        cert_data = self._client.GetCertByAlias(self._store_context, alias)
-        return cert_data
+        return self._client.GetCertByAlias(self._store_context, alias)
 
     def get_certificate_chain(self, alias):
-        chain = self._client.GetCertChain(self._store_context, alias)
-        return chain
+        return self._client.GetCertChain(self._store_context, alias)
 
     def get_entry(self, alias, protParam):
         pass
@@ -74,8 +71,7 @@ class VmKeyStore:
         pass
 
     def get_key(self, alias, password=''):
-        key_data = self._client.GetPrivateKeyByAlias(self._store_context, alias, password)
-        return key_data
+        return self._client.GetPrivateKeyByAlias(self._store_context, alias, password)
 
     def get_provider(self):
         pass
@@ -107,8 +103,7 @@ class VmKeyStore:
         self._client.AddCert(self._store_context, entry_type, alias, cert, key, password, True)
 
     def size(self):
-        count = self._client.GetEntryCount(self._store_context)
-        return count
+        return self._client.GetEntryCount(self._store_context)
 
     def store(self, param):
         pass
